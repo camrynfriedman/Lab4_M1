@@ -49,7 +49,7 @@ int proc_init(void)
         proc_create(PROC_NAME, 0666, NULL, &my_ops);
 
         // YOUR CODE GOES HERE to print kernel message like: "LAB4:  Loading  module by Keith Shafer"
-        printk(KERN_INFO "%s: Loading module by %s", LAB_NAME, your_name);
+        printk(KERN_INFO "%s: Loading module by %s\n", LAB_NAME, your_name);
 
         return 0;
 }
@@ -62,7 +62,7 @@ void proc_exit(void)
         remove_proc_entry(PROC_NAME, NULL);
 
         // YOUR CODE GOES HERE to print kernel message like: "LAB4:  Removing module by Keith Shafer"
-        printk(KERN_INFO "%s: Removing module by %s", LAB_NAME, your_name);
+        printk(KERN_INFO "%s: Removing module by %s\n", LAB_NAME, your_name);
 }
 
 /**
@@ -83,8 +83,9 @@ ssize_t proc_read(struct file *file, char __user *buf, size_t count, loff_t *pos
         // YOUR CODE GOES HERE to implement read calls like 'cat /proc/myname'
         /* initialize variables */
         int rv = 0;
-        char buffer[BUFFER_SIZE]; //
-        static int completed = 0;
+        char buffer[BUFFER_SIZE]; //buffer to hold printed message
+        static int completed = 0; //acts as a boolean to denote when run is completed
+        unsigned long raw_copy; //holds output of raw_copy_to_user
 
         if (completed)
         {
@@ -109,7 +110,7 @@ ssize_t proc_read(struct file *file, char __user *buf, size_t count, loff_t *pos
         }
 
         /*copy kernel space buffer to user space buf*/
-        raw_copy_to_user(buf, buffer, rv);
+        raw_copy = raw_copy_to_user(buf, buffer, rv);
 
         /*increment call count*/
         call_num++;
